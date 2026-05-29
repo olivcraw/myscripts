@@ -32,6 +32,11 @@ SOCKS_PORT="${SINGBOX_SOCKS_PORT:-8443}"
 TROJAN_PORT="${SINGBOX_TROJAN_PORT:-443}"
 FALLBACK_TARGET="${SINGBOX_FALLBACK_TARGET:-www.google.com}"
 DEFAULT_USER="${SINGBOX_USER:-proxyuser}"
+# direct-outbound domain resolution strategy. Default ipv4_only so servers
+# without working IPv6 (e.g. EC2 with no IPv6) don't return SOCKS5 "network
+# unreachable" (0x03) when a target resolves to an AAAA record.
+# Override with prefer_ipv6 / prefer_ipv4 / ipv6_only if the host has IPv6.
+OUTBOUND_STRATEGY="${SINGBOX_OUTBOUND_STRATEGY:-ipv4_only}"
 # -----------------------------------
 
 RED='\033[0;31m'; GREEN='\033[0;32m'; YELLOW='\033[1;33m'; BLUE='\033[0;34m'; NC='\033[0m'
@@ -254,7 +259,7 @@ EOF
     }
   ],
   "outbounds": [
-    { "type": "direct", "tag": "direct" }
+    { "type": "direct", "tag": "direct", "domain_strategy": "${OUTBOUND_STRATEGY}" }
   ]
 }
 EOF
@@ -517,6 +522,9 @@ Environment overrides:
   SINGBOX_TROJAN_PORT     trojan over TLS port         (default: 443)
   SINGBOX_FALLBACK_TARGET nginx reverse-proxy target   (default: www.google.com)
   SINGBOX_USER            SOCKS5 username              (default: proxyuser)
+  SINGBOX_OUTBOUND_STRATEGY direct-outbound DNS strategy (default: ipv4_only)
+                            ipv4_only avoids SOCKS5 "network unreachable" on
+                            hosts without IPv6; use prefer_ipv6 if IPv6 works
   SINGBOX_REINSTALL_MODE  what to do if already installed (no prompt):
                             overlay  keep username/password + cert (recommended)
                             rotate   generate NEW credentials + cert

@@ -1,11 +1,26 @@
+# myscripts
+
+一行安装(交互安全写法)。脚本作为 `bash -c` 的参数传入,stdin 仍连着终端,
+脚本内的 read 提示可正常交互。`--` 后面是传给脚本的命令($1)。
+
+## singbox-install.sh — trojan(TLS) + 明文 SOCKS5
 https://raw.githubusercontent.com/olivcraw/myscripts/main/singbox-install.sh
-bash <(curl -fsSL https://raw.githubusercontent.com/olivcraw/myscripts/main/singbox-install.sh)
-bash <(wget -qO- https://raw.githubusercontent.com/olivcraw/myscripts/main/singbox-install.sh)
 
+sudo bash -c "$(curl -fsSL https://raw.githubusercontent.com/olivcraw/myscripts/main/singbox-install.sh)" -- install
+sudo bash -c "$(curl -fsSL https://raw.githubusercontent.com/olivcraw/myscripts/main/singbox-install.sh)" -- status
+sudo bash -c "$(curl -fsSL https://raw.githubusercontent.com/olivcraw/myscripts/main/singbox-install.sh)" -- uninstall
+
+## singbox-monitor.sh — sing-box 健康监控/自愈
 https://raw.githubusercontent.com/olivcraw/myscripts/main/singbox-monitor.sh
-bash <(curl -fsSL https://raw.githubusercontent.com/olivcraw/myscripts/main/singbox-monitor.sh)
-bash <(wget -qO- https://raw.githubusercontent.com/olivcraw/myscripts/main/singbox-monitor.sh)
 
+sudo bash -c "$(curl -fsSL https://raw.githubusercontent.com/olivcraw/myscripts/main/singbox-monitor.sh)" -- install
+sudo bash -c "$(curl -fsSL https://raw.githubusercontent.com/olivcraw/myscripts/main/singbox-monitor.sh)" -- check
+sudo bash -c "$(curl -fsSL https://raw.githubusercontent.com/olivcraw/myscripts/main/singbox-monitor.sh)" -- status
+sudo bash -c "$(curl -fsSL https://raw.githubusercontent.com/olivcraw/myscripts/main/singbox-monitor.sh)" -- uninstall
+
+## ec2-trim.sh — 精简 EC2 系统
 https://raw.githubusercontent.com/olivcraw/myscripts/main/ec2-trim.sh
-bash <(curl -fsSL https://raw.githubusercontent.com/olivcraw/myscripts/main/ec2-trim.sh)
-bash <(wget -qO- https://raw.githubusercontent.com/olivcraw/myscripts/main/ec2-trim.sh)
+
+sudo bash -c "$(curl -fsSL https://raw.githubusercontent.com/olivcraw/myscripts/main/ec2-trim.sh)" -- purge
+sudo bash -c "$(curl -fsSL https://raw.githubusercontent.com/olivcraw/myscripts/main/ec2-trim.sh)" -- status
+sudo bash -c "$(curl -fsSL https://raw.githubusercontent.com/olivcraw/myscripts/main/ec2-trim.sh)" -- restore
