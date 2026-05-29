@@ -1,0 +1,11 @@
+https://raw.githubusercontent.com/olivcraw/myscripts/main/singbox-install.sh
+bash <(curl -fsSL https://raw.githubusercontent.com/olivcraw/myscripts/main/singbox-install.sh)
+bash <(wget -qO- https://raw.githubusercontent.com/olivcraw/myscripts/main/singbox-install.sh)
+
+https://raw.githubusercontent.com/olivcraw/myscripts/main/singbox-monitor.sh
+bash <(curl -fsSL https://raw.githubusercontent.com/olivcraw/myscripts/main/singbox-monitor.sh)
+bash <(wget -qO- https://raw.githubusercontent.com/olivcraw/myscripts/main/singbox-monitor.sh)
+
+https://raw.githubusercontent.com/olivcraw/myscripts/main/ec2-trim.sh
+bash <(curl -fsSL https://raw.githubusercontent.com/olivcraw/myscripts/main/ec2-trim.sh)
+bash <(wget -qO- https://raw.githubusercontent.com/olivcraw/myscripts/main/ec2-trim.sh)
