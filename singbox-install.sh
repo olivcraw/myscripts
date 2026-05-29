@@ -22,7 +22,8 @@
 set -euo pipefail
 
 # ---------- Configuration ----------
-SINGBOX_VERSION_FALLBACK="1.10.0"
+# Must be >= 1.11.0 — config uses route rule "action": "reject" (added in 1.11)
+SINGBOX_VERSION_FALLBACK="1.11.0"
 INSTALL_DIR="/usr/local/bin"
 CONFIG_DIR="/etc/sing-box"
 SERVICE_FILE="/etc/systemd/system/sing-box.service"
@@ -229,6 +230,11 @@ EOF
     "level": "info",
     "timestamp": true
   },
+  "dns": {
+    "servers": [
+      { "type": "local", "tag": "local" }
+    ]
+  },
   "inbounds": [
     {
       "type": "socks",
@@ -259,8 +265,17 @@ EOF
     }
   ],
   "outbounds": [
-    { "type": "direct", "tag": "direct", "domain_strategy": "${OUTBOUND_STRATEGY}" }
-  ]
+    { "type": "direct", "tag": "direct",
+      "domain_resolver": { "server": "local", "strategy": "${OUTBOUND_STRATEGY}" } }
+  ],
+  "route": {
+    "rules": [
+      {
+        "ip_cidr": ["169.254.169.254/32", "fd00:ec2::254/128"],
+        "action": "reject"
+      }
+    ]
+  }
 }
 EOF
     chmod 600 "$CONFIG_DIR/config.json"
