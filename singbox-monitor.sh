@@ -52,6 +52,9 @@ MAX_REBOOTS_PER_DAY=4
 MIN_REBOOT_INTERVAL_SEC=1800
 
 SCRIPT_PATH="/usr/local/bin/singbox-monitor.sh"
+# Canonical location to re-fetch this script from when it's run via
+# `bash -c "$(curl ...)"` / a pipe and therefore has no on-disk source to copy.
+SELF_URL="${SINGBOX_MONITOR_URL:-https://raw.githubusercontent.com/olivcraw/myscripts/main/singbox-monitor.sh}"
 SVC_FILE="/etc/systemd/system/singbox-monitor.service"
 TIMER_FILE="/etc/systemd/system/singbox-monitor.timer"
 TIMER_INTERVAL="1min"
@@ -548,8 +551,33 @@ install_monitor() {
         warn "(skipping tiers A/B/C; tier D outbound check still active)."
     fi
 
-    install -m 755 "$0" "$SCRIPT_PATH"
-    log "Script installed at $SCRIPT_PATH"
+    # Persist this script to disk so the systemd units can run it. When invoked
+    # as a normal file (`sudo bash singbox-monitor.sh install`) $0 is a readable
+    # path we can copy. When invoked via `bash -c "$(curl ...)"` or a pipe, $0 is
+    # not a real file (e.g. "--" or "bash"), so re-download from SELF_URL instead.
+    if [[ -f "$0" && -r "$0" ]]; then
+        install -m 755 "$0" "$SCRIPT_PATH"
+        log "Script installed at $SCRIPT_PATH (copied from $0)"
+    else
+        log "No on-disk source (piped run) — fetching script from $SELF_URL"
+        local tmp_self
+        tmp_self=$(mktemp)
+        if ! curl -fsSL --max-time "$CURL_TIMEOUT" "$SELF_URL" -o "$tmp_self"; then
+            err "Failed to download script from $SELF_URL"
+            err "Set SINGBOX_MONITOR_URL to a reachable raw URL, or run from a local file."
+            rm -f "$tmp_self"
+            exit 1
+        fi
+        # Sanity check: must look like this script, not an HTML 404 page.
+        if ! grep -q 'singbox-monitor' "$tmp_self"; then
+            err "Downloaded file doesn't look like singbox-monitor.sh (got a 404/HTML page?)."
+            rm -f "$tmp_self"
+            exit 1
+        fi
+        install -m 755 "$tmp_self" "$SCRIPT_PATH"
+        rm -f "$tmp_self"
+        log "Script installed at $SCRIPT_PATH (downloaded from $SELF_URL)"
+    fi
 
     cat > "$SVC_FILE" <<EOF
 [Unit]
